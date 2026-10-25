@@ -55,7 +55,7 @@ La aplicación crea automáticamente `autos_colombia.db` y las tablas `usuario`,
 
 - `GET /api/reportes/resumen` — consultar totales de usuarios, vehículos, celdas, movimientos, novedades y pagos.
 
-## Flujo recomendado de demostración
+## Pruebas probadas en postman como ejemplo
 
 1. Consultar `GET /api/usuarios` y obtener un `usuario_id`.
 2. Crear un vehículo con `POST /api/vehiculos`.
