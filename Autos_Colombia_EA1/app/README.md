@@ -1,69 +1,176 @@
-# Autos Colombia — API Iteración 1
+# Autos Colombia — API Iteraciones 1 y 2
+
+API REST para gestionar la operación y administración de un parqueadero. Está desarrollada con **Python, Flask y SQLite**.
+
+## Requisitos
+
+- Python 3.10 o superior.
+- Postman, opcional, para realizar las pruebas.
 
 ## Ejecutar localmente
 
-1. Instala Python 3.10+.
-2. En esta carpeta crea un entorno virtual: `python -m venv .venv`.
-3. Actívalo en Windows con `.venv\\Scripts\\activate` o en macOS/Linux con `source .venv/bin/activate`.
-4. Instala dependencias: `pip install -r requirements.txt`.
-5. Inicia la API: `python app.py`.
-6. Abre `http://127.0.0.1:5000/api/health`.
+1. Abre una terminal en la carpeta del proyecto.
+2. Crea el entorno virtual:
 
-La aplicación crea automáticamente `autos_colombia.db` y las tablas `usuario`, `vehiculo`, `celda`, `movimiento`, `novedad` y `pago`.
+   ```bash
+   python -m venv .venv
+   ```
 
-## Endpoints
+3. Activa el entorno virtual.
 
-### Usuarios
+   Windows:
 
-- `GET /api/usuarios?buscar=Ana` — listar o buscar usuarios.
-- `POST /api/usuarios` — crear usuario. Body: `{ "nombre": "Carlos Pérez", "documento": "100000002", "telefono": "3111111111" }`.
-- `GET /api/usuarios/<id>` — consultar usuario con sus vehículos.
-- `PUT /api/usuarios/<id>` — actualizar nombre, documento, teléfono y estado.
+   ```bash
+   .venv\\Scripts\\activate
+   ```
 
-### Vehículos
+4. Instala las dependencias:
 
-- `GET /api/vehiculos?placa=ABC` — listar o buscar por placa.
-- `POST /api/vehiculos` — crear vehículo. Body: `{ "placa": "XYZ789", "tipo": "AUTOMOVIL", "marca": "Renault", "color": "Blanco", "usuario_id": 2 }`.
-- `GET /api/vehiculos/<id>` — consultar vehículo.
-- `PUT /api/vehiculos/<id>` — actualizar vehículo.
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. Inicia la API:
+
+   ```bash
+   python app.py
+   ```
+
+6. Verifica que esté funcionando:
+
+   ```text
+   http://127.0.0.1:5000/api/health
+   ```
+
+Para apagarla, presiona `Ctrl + C` en la terminal.
+
+La aplicación crea automáticamente la base de datos SQLite `autos_colombia.db`.
+
+## Endpoints principales
+
+### Usuarios y vehículos
+
+- `GET /api/usuarios` — listar usuarios.
+- `POST /api/usuarios` — crear usuario.
+- `GET /api/vehiculos` — listar vehículos.
+- `POST /api/vehiculos` — crear vehículo.
+
+Ejemplo de usuario:
+
+```json
+{
+  "nombre": "Carlos Pérez",
+  "documento": "100000002",
+  "telefono": "3111111111"
+}
+```
+
+Ejemplo de vehículo:
+
+```json
+{
+  "placa": "XYZ789",
+  "tipo": "AUTOMOVIL",
+  "marca": "Renault",
+  "color": "Blanco",
+  "usuario_id": 1
+}
+```
 
 ### Celdas
 
-- `GET /api/celdas` — listar todas las celdas.
-- `GET /api/celdas?estado=LIBRE` — listar por estado.
-- `POST /api/celdas` — crear celda. Body: `{ "codigo": "B-01", "zona": "Sur" }`.
-- `PUT /api/celdas/<id>` — actualizar código, zona y estado.
+- `GET /api/celdas` — listar celdas.
+- `GET /api/celdas?estado=LIBRE` — consultar celdas libres.
+- `POST /api/celdas` — crear celda.
+- `PUT /api/celdas/<id>` — actualizar celda.
+
+Ejemplo:
+
+```json
+{
+  "codigo": "B-01",
+  "zona": "Sur"
+}
+```
 
 ### Entradas y salidas
 
 - `GET /api/movimientos/activos` — consultar vehículos dentro.
-- `POST /api/entradas` — registrar entrada. Body: `{ "placa": "ABC123", "celda_id": 1 }`.
-- `POST /api/salidas/<movimiento_id>` — registrar salida, liberar celda y crear pago pendiente.
+- `POST /api/entradas` — registrar entrada.
+- `POST /api/salidas/<movimiento_id>` — registrar salida y generar pago pendiente.
 
-### Novedades
+Ejemplo de entrada:
+
+```json
+{
+  "placa": "ABC123",
+  "celda_id": 1
+}
+```
+
+### Novedades y pagos
 
 - `GET /api/novedades` — listar novedades.
-- `POST /api/novedades` — crear novedad. Body: `{ "movimiento_id": 1, "descripcion": "Rayón leve", "prioridad": "MEDIA" }`.
-
-### Pagos
-
+- `POST /api/novedades` — registrar novedad.
 - `GET /api/pagos` — listar pagos.
-- `GET /api/pagos?estado=PENDIENTE` — listar pagos pendientes.
-- `POST /api/pagos` — confirmar pago. Body: `{ "movimiento_id": 1, "metodo": "TRANSFERENCIA" }`.
+- `GET /api/pagos?estado=PENDIENTE` — consultar pagos pendientes.
+- `POST /api/pagos` — confirmar pago.
+
+Ejemplo de novedad:
+
+```json
+{
+  "movimiento_id": 1,
+  "descripcion": "Rayón leve",
+  "prioridad": "MEDIA"
+}
+```
+
+Ejemplo de pago:
+
+```json
+{
+  "movimiento_id": 1,
+  "metodo": "TRANSFERENCIA"
+}
+```
 
 ### Reportes
 
-- `GET /api/reportes/resumen` — consultar totales de usuarios, vehículos, celdas, movimientos, novedades y pagos.
+- `GET /api/reportes/resumen` — consultar el resumen de usuarios, vehículos, celdas, movimientos, novedades y pagos.
 
-## Pruebas probadas en postman como ejemplo
+## Flujo básico de pruebas
 
-1. Consultar `GET /api/usuarios` y obtener un `usuario_id`.
-2. Crear un vehículo con `POST /api/vehiculos`.
-3. Consultar o crear una celda con `GET /api/celdas` o `POST /api/celdas`.
-4. Registrar entrada con `POST /api/entradas`.
-5. Registrar una novedad con `POST /api/novedades`.
-6. Registrar salida con `POST /api/salidas/<id>`.
-7. Consultar el pago pendiente con `GET /api/pagos?estado=PENDIENTE`.
-8. Confirmar el pago con `POST /api/pagos`.
-9. Consultar `GET /api/reportes/resumen`.
+1. `GET /api/health`.
+2. Consultar usuarios y obtener un `usuario_id`.
+3. Crear o consultar un vehículo.
+4. Consultar una celda libre.
+5. Registrar una entrada.
+6. Consultar movimientos activos.
+7. Registrar una novedad.
+8. Registrar la salida usando el `movimiento_id`.
+9. Consultar el pago pendiente.
+10. Confirmar el pago.
+11. Consultar el reporte general.
 
+Para las solicitudes `POST` y `PUT`, usar en Postman:
+
+```text
+Body → raw → JSON
+```
+
+y el encabezado:
+
+```text
+Content-Type: application/json
+```
+
+## Reiniciar la base de datos
+
+1. Detén la API con `Ctrl + C`.
+2. Elimina `autos_colombia.db`.
+3. Ejecuta nuevamente:
+
+   ```bash
+   python app.py
+   ```
